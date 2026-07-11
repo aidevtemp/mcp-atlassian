@@ -530,210 +530,141 @@ class UserTokenMiddleware:
             logger.warning(f"Error checking auth path: {e}")
             return False
 
-    def _process_authentication_headers(self, scope: Scope) -> None:
-        """Process authentication headers and store in scope state."""
-        try:
-            # Parse headers from scope (headers are byte tuples per ASGI spec)
-            headers = dict(scope.get("headers", []))
-            auth_header = headers.get(b"authorization")
-            cloud_id_header = headers.get(b"x-atlassian-cloud-id")
+def _process_authentication_headers(self, scope: Scope) -> None:
+    """Process authentication headers and store in scope state."""
+    try:
+        # Parse headers from scope (headers are byte tuples per ASGI spec)
+        headers = dict(scope.get("headers", []))
+        auth_header = headers.get(b"authorization")
+        cloud_id_header = headers.get(b"x-atlassian-cloud-id")
 
-            # Convert bytes to strings (ASGI headers are always bytes)
-            auth_header_str = auth_header.decode("latin-1") if auth_header else None
-            cloud_id_str = (
-                cloud_id_header.decode("latin-1") if cloud_id_header else None
-            )
+        # Convert bytes to strings (ASGI headers are always bytes)
+        auth_header_str = auth_header.decode("latin-1") if auth_header else None
+        cloud_id_str = (
+            cloud_id_header.decode("latin-1") if cloud_id_header else None
+        )
 
-            # Extract additional Atlassian service headers for service availability detection
-            jira_token_header = headers.get(b"x-atlassian-jira-personal-token")
-            jira_url_header = headers.get(b"x-atlassian-jira-url")
-            confluence_token_header = headers.get(
-                b"x-atlassian-confluence-personal-token"
-            )
-            confluence_url_header = headers.get(b"x-atlassian-confluence-url")
+        # Extract additional Atlassian service headers for service availability detection
+        jira_token_header = headers.get(b"x-atlassian-jira-personal-token")
+        jira_url_header = headers.get(b"x-atlassian-jira-url")
+        confluence_token_header = headers.get(
+            b"x-atlassian-confluence-personal-token"
+        )
+        confluence_url_header = headers.get(b"x-atlassian-confluence-url")
 
-            # Convert service header bytes to strings
-            jira_token_str = (
-                jira_token_header.decode("latin-1") if jira_token_header else None
-            )
-            jira_url_str = (
-                jira_url_header.decode("latin-1") if jira_url_header else None
-            )
-            confluence_token_str = (
-                confluence_token_header.decode("latin-1")
-                if confluence_token_header
-                else None
-            )
-            confluence_url_str = (
-                confluence_url_header.decode("latin-1")
-                if confluence_url_header
-                else None
-            )
+        # --- NEW: allow Claude's allowlisted "x-api-key" header as an alternate
+        # way to supply the Jira PAT, for clients (like claude.ai custom
+        # connectors) that only permit a fixed set of header names.
+        api_key_header = headers.get(b"x-api-key")
+        api_key_str = api_key_header.decode("latin-1") if api_key_header else None
 
-            # Validate URLs to prevent SSRF
-            if jira_url_str:
-                ssrf_error = validate_url_for_ssrf(jira_url_str)
-                if ssrf_error:
-                    scope["state"]["auth_validation_error"] = (
-                        f"Forbidden: Invalid Jira URL - {ssrf_error}"
-                    )
-                    return
+        # Convert service header bytes to strings
+        jira_token_str = (
+            jira_token_header.decode("latin-1") if jira_token_header else None
+        )
+        jira_url_str = (
+            jira_url_header.decode("latin-1") if jira_url_header else None
+        )
+        confluence_token_str = (
+            confluence_token_header.decode("latin-1")
+            if confluence_token_header
+            else None
+        )
+        confluence_url_str = (
+            confluence_url_header.decode("latin-1")
+            if confluence_url_header
+            else None
+        )
 
-            if confluence_url_str:
-                ssrf_error = validate_url_for_ssrf(confluence_url_str)
-                if ssrf_error:
-                    scope["state"]["auth_validation_error"] = (
-                        f"Forbidden: Invalid Confluence URL - {ssrf_error}"
-                    )
-                    return
-
-            # Build service headers dict
-            service_headers = {}
-            if jira_token_str:
-                service_headers["X-Atlassian-Jira-Personal-Token"] = jira_token_str
-            if jira_url_str:
-                service_headers["X-Atlassian-Jira-Url"] = jira_url_str
-            if confluence_token_str:
-                service_headers["X-Atlassian-Confluence-Personal-Token"] = (
-                    confluence_token_str
-                )
-            if confluence_url_str:
-                service_headers["X-Atlassian-Confluence-Url"] = confluence_url_str
-
-            scope["state"]["atlassian_service_headers"] = service_headers
-            if service_headers:
-                logger.debug(
-                    f"UserTokenMiddleware: Extracted service headers: {list(service_headers.keys())}"
-                )
-
-            # Log mcp-session-id for debugging
-            mcp_session_id = headers.get(b"mcp-session-id")
-            if mcp_session_id:
-                session_id_str = mcp_session_id.decode("latin-1")
-                logger.debug(
-                    f"UserTokenMiddleware: MCP-Session-ID header found: {session_id_str}"
-                )
-
+        # --- NEW: if no explicit Jira PAT header was sent, fall back to
+        # x-api-key for the token, and to the server's own JIRA_URL env var
+        # for the URL (since the URL is fixed and identical for every user,
+        # only the token needs to vary per request).
+        if not jira_token_str and api_key_str:
+            jira_token_str = api_key_str
+            if not jira_url_str:
+                jira_url_str = os.getenv("JIRA_URL")
             logger.debug(
-                f"UserTokenMiddleware: Processing auth for {scope.get('path')}, "
-                f"AuthHeader present: {bool(auth_header_str)}, "
-                f"CloudId present: {bool(cloud_id_str)}"
+                "UserTokenMiddleware: Using x-api-key header as Jira PAT "
+                "(falling back to server JIRA_URL env var for instance URL)."
             )
 
-            # Process Cloud ID
-            if cloud_id_str and cloud_id_str.strip():
-                scope["state"]["user_atlassian_cloud_id"] = cloud_id_str.strip()
-                logger.debug(
-                    f"UserTokenMiddleware: Extracted cloudId: {cloud_id_str.strip()}"
-                )
-
-            # Process Authorization header
-            if auth_header_str:
-                self._parse_auth_header(auth_header_str, scope)
-            else:
-                logger.debug("UserTokenMiddleware: No Authorization header provided")
-                # If service headers are present without Authorization header, set PAT auth type
-                if service_headers and (
-                    (jira_token_str and jira_url_str)
-                    or (confluence_token_str and confluence_url_str)
-                ):
-                    scope["state"]["user_atlassian_auth_type"] = "pat"
-                    scope["state"]["user_atlassian_email"] = None
-                    logger.debug(
-                        "UserTokenMiddleware: Header-based authentication detected. Setting PAT auth type."
-                    )
-
-        except Exception as e:
-            logger.error(f"Error processing authentication headers: {e}", exc_info=True)
-            scope["state"]["auth_validation_error"] = "Authentication processing error"
-
-    def _parse_auth_header(self, auth_header: str, scope: Scope) -> None:
-        """Parse the Authorization header and store credentials in scope state."""
-        # Check prefix BEFORE stripping to preserve "Bearer " / "Token " matching
-        if auth_header.startswith("Bearer "):
-            token = auth_header[7:].strip()  # Remove "Bearer " prefix and strip token
-            if not token:
+        # Validate URLs to prevent SSRF
+        if jira_url_str:
+            ssrf_error = validate_url_for_ssrf(jira_url_str)
+            if ssrf_error:
                 scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Empty Bearer token"
-                )
-            else:
-                scope["state"]["user_atlassian_token"] = token
-                scope["state"]["user_atlassian_auth_type"] = "oauth"
-                logger.debug(
-                    "UserTokenMiddleware: Bearer token extracted (masked): "
-                    f"...{mask_sensitive(token, 8)}"
-                )
-
-        elif auth_header.startswith("Token "):
-            token = auth_header[6:].strip()  # Remove "Token " prefix and strip token
-            if not token:
-                scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Empty Token (PAT)"
-                )
-            else:
-                scope["state"]["user_atlassian_token"] = token
-                scope["state"]["user_atlassian_auth_type"] = "pat"
-                logger.debug(
-                    "UserTokenMiddleware: PAT token extracted (masked): "
-                    f"...{mask_sensitive(token, 8)}"
-                )
-
-        elif auth_header.startswith("Basic "):
-            encoded = auth_header[6:].strip()
-            if not encoded:
-                scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Empty Basic auth credentials"
+                    f"Forbidden: Invalid Jira URL - {ssrf_error}"
                 )
                 return
-            try:
-                decoded = base64.b64decode(encoded).decode("utf-8")
-            except (ValueError, UnicodeDecodeError) as e:
-                logger.warning(f"Failed to decode Basic auth: {e}")
+
+        if confluence_url_str:
+            ssrf_error = validate_url_for_ssrf(confluence_url_str)
+            if ssrf_error:
                 scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Invalid Basic auth encoding"
+                    f"Forbidden: Invalid Confluence URL - {ssrf_error}"
                 )
                 return
-            if ":" not in decoded:
-                scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Invalid Basic auth format. "
-                    "Expected 'email:api_token'"
-                )
-                return
-            email, api_token = decoded.split(":", 1)
-            if not email or not api_token:
-                scope["state"]["auth_validation_error"] = (
-                    "Unauthorized: Email or API token is empty"
-                )
-                return
-            scope["state"]["user_atlassian_email"] = email
-            scope["state"]["user_atlassian_api_token"] = api_token
-            scope["state"]["user_atlassian_auth_type"] = "basic"
-            scope["state"]["user_atlassian_token"] = None
+
+        # Build service headers dict
+        service_headers = {}
+        if jira_token_str:
+            service_headers["X-Atlassian-Jira-Personal-Token"] = jira_token_str
+        if jira_url_str:
+            service_headers["X-Atlassian-Jira-Url"] = jira_url_str
+        if confluence_token_str:
+            service_headers["X-Atlassian-Confluence-Personal-Token"] = (
+                confluence_token_str
+            )
+        if confluence_url_str:
+            service_headers["X-Atlassian-Confluence-Url"] = confluence_url_str
+
+        scope["state"]["atlassian_service_headers"] = service_headers
+        if service_headers:
             logger.debug(
-                f"UserTokenMiddleware: Basic auth extracted for email: {email}"
+                f"UserTokenMiddleware: Extracted service headers: {list(service_headers.keys())}"
             )
 
-        elif auth_header.strip():
-            # Non-empty but unsupported auth type
-            auth_value = auth_header.strip()
-            if " " in auth_value:
-                auth_type = auth_value.split(" ", 1)[0]
-            else:
-                # No space means no type prefix — likely a raw token.
-                # Redact to avoid leaking credentials in logs.
-                auth_type = "<redacted>"
-            logger.warning(f"Unsupported Authorization type: {auth_type}")
-            scope["state"]["auth_validation_error"] = (
-                "Unauthorized: Only 'Bearer <OAuthToken>', "
-                "'Token <PAT>', or 'Basic <base64(email:api_token)>' "
-                "types are supported."
+        # Log mcp-session-id for debugging
+        mcp_session_id = headers.get(b"mcp-session-id")
+        if mcp_session_id:
+            session_id_str = mcp_session_id.decode("latin-1")
+            logger.debug(
+                f"UserTokenMiddleware: MCP-Session-ID header found: {session_id_str}"
             )
+
+        logger.debug(
+            f"UserTokenMiddleware: Processing auth for {scope.get('path')}, "
+            f"AuthHeader present: {bool(auth_header_str)}, "
+            f"CloudId present: {bool(cloud_id_str)}"
+        )
+
+        # Process Cloud ID
+        if cloud_id_str and cloud_id_str.strip():
+            scope["state"]["user_atlassian_cloud_id"] = cloud_id_str.strip()
+            logger.debug(
+                f"UserTokenMiddleware: Extracted cloudId: {cloud_id_str.strip()}"
+            )
+
+        # Process Authorization header
+        if auth_header_str:
+            self._parse_auth_header(auth_header_str, scope)
         else:
-            # Empty or whitespace-only
-            scope["state"]["auth_validation_error"] = (
-                "Unauthorized: Empty Authorization header"
-            )
+            logger.debug("UserTokenMiddleware: No Authorization header provided")
+            # If service headers are present without Authorization header, set PAT auth type
+            if service_headers and (
+                (jira_token_str and jira_url_str)
+                or (confluence_token_str and confluence_url_str)
+            ):
+                scope["state"]["user_atlassian_auth_type"] = "pat"
+                scope["state"]["user_atlassian_email"] = None
+                logger.debug(
+                    "UserTokenMiddleware: Header-based authentication detected. Setting PAT auth type."
+                )
 
+    except Exception as e:
+        logger.error(f"Error processing authentication headers: {e}", exc_info=True)
+        scope["state"]["auth_validation_error"] = "Authentication processing error"
 
 def _get_allowed_redirect_uris() -> list[str] | None:
     raw = os.getenv("ATLASSIAN_OAUTH_ALLOWED_CLIENT_REDIRECT_URIS")
