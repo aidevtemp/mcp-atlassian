@@ -247,6 +247,7 @@ def _parse_attachments(
 
 
 @jira_mcp.tool(
+    name="jira_get_user_profile",
     tags={"jira", "read", "toolset:jira_users"},
     annotations={"title": "Get User Profile", "readOnlyHint": True},
 )
@@ -308,6 +309,7 @@ async def get_user_profile(
 
 
 @jira_mcp.tool(
+    name="jira_search_assignable_users",
     tags={"jira", "read", "toolset:jira_users"},
     annotations={"title": "Search Assignable Users", "readOnlyHint": True},
 )
@@ -428,6 +430,7 @@ async def search_assignable_users(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_watchers",
     tags={"jira", "read", "toolset:jira_watchers"},
     annotations={"title": "Get Issue Watchers", "readOnlyHint": True},
 )
@@ -459,6 +462,7 @@ async def get_issue_watchers(
 
 
 @jira_mcp.tool(
+    name="jira_add_watcher",
     tags={"jira", "write", "toolset:jira_watchers"},
     annotations={
         "title": "Add Issue Watcher",
@@ -504,6 +508,7 @@ async def add_watcher(
 
 
 @jira_mcp.tool(
+    name="jira_remove_watcher",
     tags={"jira", "write", "toolset:jira_watchers"},
     annotations={
         "title": "Remove Issue Watcher",
@@ -555,6 +560,7 @@ async def remove_watcher(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue",
     tags={"jira", "read", "toolset:jira_issues"},
     annotations={"title": "Get Issue", "readOnlyHint": True},
 )
@@ -735,6 +741,7 @@ async def get_issue(
 
 
 @jira_mcp.tool(
+    name="jira_search",
     tags={"jira", "read", "toolset:jira_issues"},
     annotations={"title": "Search Issues", "readOnlyHint": True},
 )
@@ -857,6 +864,7 @@ async def search(
 
 
 @jira_mcp.tool(
+    name="jira_search_fields",
     tags={"jira", "read", "toolset:jira_fields"},
     annotations={"title": "Search Fields", "readOnlyHint": True},
 )
@@ -972,6 +980,7 @@ def _to_values_only_payload(options: list[dict[str, Any]]) -> list[Any]:
 
 
 @jira_mcp.tool(
+    name="jira_get_field_options",
     tags={"jira", "read", "toolset:jira_fields"},
     annotations={"title": "Get Field Options", "readOnlyHint": True},
 )
@@ -1075,6 +1084,7 @@ async def get_field_options(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_issues",
     tags={"jira", "read", "toolset:jira_issues"},
     annotations={"title": "Get Project Issues", "readOnlyHint": True},
 )
@@ -1116,6 +1126,7 @@ async def get_project_issues(
 
 
 @jira_mcp.tool(
+    name="jira_get_transitions",
     tags={"jira", "read", "toolset:jira_transitions"},
     annotations={"title": "Get Transitions", "readOnlyHint": True},
 )
@@ -1145,6 +1156,7 @@ async def get_transitions(
 
 
 @jira_mcp.tool(
+    name="jira_get_worklog",
     tags={"jira", "read", "toolset:jira_worklog"},
     annotations={"title": "Get Worklog", "readOnlyHint": True},
 )
@@ -1174,6 +1186,7 @@ async def get_worklog(
 
 
 @jira_mcp.tool(
+    name="jira_download_attachments",
     tags={"jira", "read", "toolset:jira_attachments"},
     annotations={"title": "Download Attachments", "readOnlyHint": True},
 )
@@ -1308,6 +1321,7 @@ async def download_attachments(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_images",
     tags={"jira", "read", "attachments", "toolset:jira_attachments"},
     annotations={"title": "Get Issue Images", "readOnlyHint": True},
 )
@@ -1440,6 +1454,7 @@ async def get_issue_images(
 
 
 @jira_mcp.tool(
+    name="jira_get_agile_boards",
     tags={"jira", "read", "toolset:jira_agile"},
     annotations={"title": "Get Agile Boards", "readOnlyHint": True},
 )
@@ -1497,6 +1512,7 @@ async def get_agile_boards(
 
 
 @jira_mcp.tool(
+    name="jira_get_board_issues",
     tags={"jira", "read", "toolset:jira_agile"},
     annotations={"title": "Get Board Issues", "readOnlyHint": True},
 )
@@ -1577,6 +1593,7 @@ async def get_board_issues(
 
 
 @jira_mcp.tool(
+    name="jira_get_sprints_from_board",
     tags={"jira", "read", "toolset:jira_agile"},
     annotations={"title": "Get Sprints from Board", "readOnlyHint": True},
 )
@@ -1617,6 +1634,7 @@ async def get_sprints_from_board(
 
 
 @jira_mcp.tool(
+    name="jira_get_sprint_issues",
     tags={"jira", "read", "toolset:jira_agile"},
     annotations={"title": "Get Sprint Issues", "readOnlyHint": True},
 )
@@ -1668,6 +1686,7 @@ async def get_sprint_issues(
 
 
 @jira_mcp.tool(
+    name="jira_get_link_types",
     tags={"jira", "read", "toolset:jira_links"},
     annotations={"title": "Get Link Types", "readOnlyHint": True},
 )
@@ -1703,6 +1722,7 @@ async def get_link_types(
 
 
 @jira_mcp.tool(
+    name="jira_create_issue",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Create Issue", "destructiveHint": False},
 )
@@ -1817,6 +1837,7 @@ async def create_issue(
 
 
 @jira_mcp.tool(
+    name="jira_batch_create_issues",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Batch Create Issues", "destructiveHint": False},
 )
@@ -1889,6 +1910,7 @@ async def batch_create_issues(
 
 
 @jira_mcp.tool(
+    name="jira_batch_get_changelogs",
     tags={"jira", "read", "toolset:jira_issues"},
     annotations={"title": "Batch Get Changelogs", "readOnlyHint": True},
 )
@@ -1970,6 +1992,7 @@ async def batch_get_changelogs(
 
 
 @jira_mcp.tool(
+    name="jira_update_issue",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Update Issue", "destructiveHint": True},
 )
@@ -2100,6 +2123,7 @@ async def update_issue(
 
 
 @jira_mcp.tool(
+    name="jira_assign_issue",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Assign Issue", "readOnlyHint": False},
 )
@@ -2167,6 +2191,7 @@ async def assign_issue(
 
 
 @jira_mcp.tool(
+    name="jira_delete_issue",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Delete Issue", "destructiveHint": True},
 )
@@ -2201,6 +2226,7 @@ async def delete_issue(
 
 
 @jira_mcp.tool(
+    name="jira_move_issue",
     tags={"jira", "write", "toolset:jira_issues"},
     annotations={"title": "Move Issue to Project", "destructiveHint": True},
 )
@@ -2273,6 +2299,7 @@ async def move_issue(
 
 
 @jira_mcp.tool(
+    name="jira_add_comment",
     tags={"jira", "write", "toolset:jira_comments"},
     annotations={"title": "Add Comment", "destructiveHint": False},
 )
@@ -2342,6 +2369,7 @@ async def add_comment(
 
 
 @jira_mcp.tool(
+    name="jira_edit_comment",
     tags={"jira", "write", "toolset:jira_comments"},
     annotations={"title": "Edit Comment", "destructiveHint": True},
 )
@@ -2386,6 +2414,7 @@ async def edit_comment(
 
 
 @jira_mcp.tool(
+    name="jira_add_worklog",
     tags={"jira", "write", "toolset:jira_worklog"},
     annotations={"title": "Add Worklog", "destructiveHint": True},
 )
@@ -2462,6 +2491,7 @@ async def add_worklog(
 
 
 @jira_mcp.tool(
+    name="jira_link_to_epic",
     tags={"jira", "write", "toolset:jira_links"},
     annotations={"title": "Link to Epic", "destructiveHint": True},
 )
@@ -2506,6 +2536,7 @@ async def link_to_epic(
 
 
 @jira_mcp.tool(
+    name="jira_create_issue_link",
     tags={"jira", "write", "toolset:jira_links"},
     annotations={"title": "Create Issue Link", "destructiveHint": False},
 )
@@ -2590,6 +2621,7 @@ async def create_issue_link(
 
 
 @jira_mcp.tool(
+    name="jira_create_remote_issue_link",
     tags={"jira", "write", "toolset:jira_links"},
     annotations={"title": "Create Remote Issue Link", "destructiveHint": False},
 )
@@ -2678,6 +2710,7 @@ async def create_remote_issue_link(
 
 
 @jira_mcp.tool(
+    name="jira_remove_issue_link",
     tags={"jira", "write", "toolset:jira_links"},
     annotations={"title": "Remove Issue Link", "destructiveHint": True},
 )
@@ -2707,6 +2740,7 @@ async def remove_issue_link(
 
 
 @jira_mcp.tool(
+    name="jira_transition_issue",
     tags={"jira", "write", "toolset:jira_transitions"},
     annotations={"title": "Transition Issue", "destructiveHint": True},
 )
@@ -2787,6 +2821,7 @@ async def transition_issue(
 
 
 @jira_mcp.tool(
+    name="jira_create_sprint",
     tags={"jira", "write", "toolset:jira_agile"},
     annotations={"title": "Create Sprint", "destructiveHint": False},
 )
@@ -2833,6 +2868,7 @@ async def create_sprint(
 
 
 @jira_mcp.tool(
+    name="jira_update_sprint",
     tags={"jira", "write", "toolset:jira_agile"},
     annotations={"title": "Update Sprint", "destructiveHint": True},
 )
@@ -2894,6 +2930,7 @@ async def update_sprint(
 
 
 @jira_mcp.tool(
+    name="jira_add_issues_to_sprint",
     tags={"jira", "write", "toolset:jira_agile"},
     annotations={"title": "Add Issues to Sprint", "destructiveHint": True},
 )
@@ -2931,6 +2968,7 @@ async def add_issues_to_sprint(
 
 
 @jira_mcp.tool(
+    name="jira_move_issues_to_backlog",
     tags={"jira", "write", "toolset:jira_agile"},
     annotations={"title": "Move Issues to Backlog", "readOnlyHint": False},
 )
@@ -2965,6 +3003,7 @@ async def move_issues_to_backlog(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_issue_types",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get Project Issue Types", "readOnlyHint": True},
 )
@@ -3009,6 +3048,7 @@ async def get_project_issue_types(
 
 
 @jira_mcp.tool(
+    name="jira_get_create_fields",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get Create Fields", "readOnlyHint": True},
 )
@@ -3062,6 +3102,7 @@ async def get_create_fields(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_versions",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get Project Versions", "readOnlyHint": True},
 )
@@ -3082,6 +3123,7 @@ async def get_project_versions(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_components",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get Project Components", "readOnlyHint": True},
 )
@@ -3102,6 +3144,7 @@ async def get_project_components(
 
 
 @jira_mcp.tool(
+    name="jira_get_all_projects",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get All Projects", "readOnlyHint": True},
 )
@@ -3170,6 +3213,7 @@ async def get_all_projects(
 
 
 @jira_mcp.tool(
+    name="jira_search_projects",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Search Projects", "readOnlyHint": True},
 )
@@ -3255,6 +3299,7 @@ async def search_projects(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_fields",
     tags={"jira", "read", "toolset:jira_projects"},
     annotations={"title": "Get Project Fields", "readOnlyHint": True},
 )
@@ -3304,6 +3349,7 @@ async def get_project_fields(
 
 
 @jira_mcp.tool(
+    name="jira_get_service_desk_for_project",
     tags={"jira", "read", "toolset:jira_service_desk"},
     annotations={
         "title": "Get Service Desk For Project",
@@ -3345,6 +3391,7 @@ async def get_service_desk_for_project(
 
 
 @jira_mcp.tool(
+    name="jira_get_service_desk_queues",
     tags={"jira", "read", "toolset:jira_service_desk"},
     annotations={"title": "Get Service Desk Queues", "readOnlyHint": True},
 )
@@ -3391,6 +3438,7 @@ async def get_service_desk_queues(
 
 
 @jira_mcp.tool(
+    name="jira_get_queue_issues",
     tags={"jira", "read", "toolset:jira_service_desk"},
     annotations={"title": "Get Queue Issues", "readOnlyHint": True},
 )
@@ -3442,6 +3490,7 @@ async def get_queue_issues(
 
 
 @jira_mcp.tool(
+    name="jira_get_request_types",
     tags={"jira", "read", "toolset:jira_service_desk"},
     annotations={"title": "Get Request Types", "readOnlyHint": True},
 )
@@ -3481,6 +3530,7 @@ async def get_request_types(
 
 
 @jira_mcp.tool(
+    name="jira_get_request_type_fields",
     tags={"jira", "read", "toolset:jira_service_desk"},
     annotations={"title": "Get Request Type Fields", "readOnlyHint": True},
 )
@@ -3514,6 +3564,7 @@ async def get_request_type_fields(
 
 
 @jira_mcp.tool(
+    name="jira_create_customer_request",
     tags={"jira", "write", "toolset:jira_service_desk"},
     annotations={"title": "Create Customer Request", "destructiveHint": True},
 )
@@ -3613,6 +3664,7 @@ async def create_customer_request(
 
 
 @jira_mcp.tool(
+    name="jira_create_version",
     tags={"jira", "write", "toolset:jira_projects"},
     annotations={"title": "Create Version", "destructiveHint": False},
 )
@@ -3670,7 +3722,7 @@ async def create_version(
 
 
 @jira_mcp.tool(
-    name="batch_create_versions",
+    name="jira_batch_create_versions",
     tags={"jira", "write", "toolset:jira_projects"},
     annotations={"title": "Batch Create Versions", "destructiveHint": False},
 )
@@ -3754,6 +3806,7 @@ async def batch_create_versions(
 
 
 @jira_mcp.tool(
+    name="jira_update_version",
     tags={"jira", "write", "toolset:jira_projects"},
     annotations={"title": "Update Version", "destructiveHint": True},
 )
@@ -3827,6 +3880,7 @@ async def update_version(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_proforma_forms",
     tags={"jira", "read", "toolset:jira_forms"},
     annotations={"title": "Get Issue Forms", "readOnlyHint": True},
 )
@@ -3882,6 +3936,7 @@ async def get_issue_proforma_forms(
 
 
 @jira_mcp.tool(
+    name="jira_get_proforma_form_details",
     tags={"jira", "read", "toolset:jira_forms"},
     annotations={"title": "Get Form Details", "readOnlyHint": True},
 )
@@ -3952,6 +4007,7 @@ async def get_proforma_form_details(
 
 
 @jira_mcp.tool(
+    name="jira_update_proforma_form_answers",
     tags={"jira", "write", "toolset:jira_forms"},
     annotations={"title": "Update Form Answers", "destructiveHint": True},
 )
@@ -4082,6 +4138,7 @@ async def update_proforma_form_answers(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_dates",
     tags={"jira", "read", "metrics", "toolset:jira_metrics"},
     annotations={"title": "Get Issue Dates", "readOnlyHint": True},
 )
@@ -4139,6 +4196,7 @@ async def get_issue_dates(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_sla",
     tags={"jira", "read", "metrics", "sla", "toolset:jira_metrics"},
     annotations={"title": "Get Issue SLA", "readOnlyHint": True},
 )
@@ -4220,6 +4278,7 @@ async def get_issue_sla(
 
 
 @jira_mcp.tool(
+    name="jira_get_issue_development_info",
     tags={"jira", "read", "development", "toolset:jira_development"},
     annotations={"title": "Get Issue Development Info", "readOnlyHint": True},
 )
@@ -4282,6 +4341,7 @@ async def get_issue_development_info(
 
 
 @jira_mcp.tool(
+    name="jira_get_issues_development_info",
     tags={"jira", "read", "development", "toolset:jira_development"},
     annotations={"title": "Get Issues Development Info", "readOnlyHint": True},
 )
@@ -4346,6 +4406,7 @@ async def get_issues_development_info(
 
 
 @jira_mcp.tool(
+    name="jira_get_project_epic_hierarchy",
     tags={"jira", "read", "toolset:jira_project_analysis"},
     annotations={
         "title": "Get Project Epic Hierarchy",
@@ -4395,6 +4456,7 @@ async def get_project_epic_hierarchy(
 
 
 @jira_mcp.tool(
+    name="jira_get_cross_project_dependencies",
     tags={"jira", "read", "toolset:jira_project_analysis"},
     annotations={
         "title": "Get Cross-Project Dependencies",

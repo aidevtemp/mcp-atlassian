@@ -888,8 +888,8 @@ main_mcp = AtlassianMCP(
     lifespan=main_lifespan,
     auth=_build_auth_provider(),
 )
-main_mcp.mount(jira_mcp, "jira")
-main_mcp.mount(confluence_mcp, "confluence")
+main_mcp.mount(jira_mcp, "")
+main_mcp.mount(confluence_mcp, "")
 
 
 @main_mcp.custom_route("/healthz", methods=["GET"], include_in_schema=False)

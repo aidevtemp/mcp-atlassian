@@ -553,7 +553,7 @@ def test_jira_mcp(mock_jira_fetcher, mock_base_jira_config):
     jira_sub_mcp.add_tool(add_issues_to_sprint)
     jira_sub_mcp.add_tool(batch_create_versions)
     jira_sub_mcp.add_tool(update_version)
-    test_mcp.mount(jira_sub_mcp, prefix="jira")
+    test_mcp.mount(jira_sub_mcp, prefix="")
     return test_mcp
 
 
@@ -579,7 +579,7 @@ def no_fetcher_test_jira_mcp(mock_base_jira_config):
 
     jira_sub_mcp = FastMCP(name="NoFetcherTestJiraSubMCP")
     jira_sub_mcp.add_tool(get_issue)
-    test_mcp.mount(jira_sub_mcp, prefix="jira")
+    test_mcp.mount(jira_sub_mcp, prefix="")
     return test_mcp
 
 
@@ -1268,7 +1268,7 @@ async def test_no_fetcher_get_issue(no_fetcher_client_fixture, mock_request):
                     "issue_key": "TEST-123",
                 },
             )
-    assert "Error calling tool 'get_issue'" in str(excinfo.value)
+    assert "Error calling tool 'jira_get_issue'" in str(excinfo.value)
 
 
 @pytest.mark.anyio

@@ -300,7 +300,7 @@ def test_confluence_mcp(mock_confluence_fetcher, mock_base_confluence_config):
     confluence_sub_mcp.add_tool(get_page_template)
     confluence_sub_mcp.add_tool(create_page_from_template)
 
-    test_mcp.mount(confluence_sub_mcp, prefix="confluence")
+    test_mcp.mount(confluence_sub_mcp, prefix="")
 
     return test_mcp
 
@@ -383,7 +383,7 @@ def no_fetcher_test_confluence_mcp(mock_base_confluence_config):
     confluence_sub_mcp.add_tool(get_page_template)
     confluence_sub_mcp.add_tool(create_page_from_template)
 
-    test_mcp.mount(confluence_sub_mcp, prefix="confluence")
+    test_mcp.mount(confluence_sub_mcp, prefix="")
 
     return test_mcp
 
